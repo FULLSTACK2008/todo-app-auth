@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import "../index.css";
 
 const API_URL = "http://localhost:5000/api/todos";
 
@@ -103,79 +104,88 @@ function Todos() {
     navigate("/login");
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      addTodo();
+    }
+  };
+
   return (
-    <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h1>TODO APP</h1>
-        <button onClick={handleLogout} style={{ backgroundColor: "#dc3545", color: "white", padding: "8px 16px", border: "none", borderRadius: "4px", cursor: "pointer" }}>
+    <div className="todo-container">
+      <div className="todo-header">
+        <h1>📝 Todo App</h1>
+        <button onClick={handleLogout} className="logout-btn">
           Logout
         </button>
       </div>
 
-      <div style={{ marginBottom: "20px" }}>
+      <div className="add-todo-form">
         <input
           value={title}
           onChange={(e) => setTitle(e.target.value)}
-          placeholder="add todo"
-          style={{ padding: "8px", marginRight: "8px" }}
+          onKeyPress={handleKeyPress}
+          placeholder="What needs to be done?"
+          className="add-todo-input"
         />
-
-        <button onClick={addTodo} style={{ padding: "8px 16px" }}>Add</button>
+        <button onClick={addTodo} className="add-todo-btn">
+          Add Todo
+        </button>
       </div>
 
       {isLoading ? (
-        <p>Loading...</p>
+        <p className="loading-text">Loading your todos...</p>
+      ) : todos.length === 0 ? (
+        <div className="empty-state">
+          <div className="empty-state-icon">📋</div>
+          <p className="empty-state-text">No todos yet! Add your first one above.</p>
+        </div>
       ) : (
-        todos.map((todo) => (
-          <div key={todo.id} style={{ 
-            padding: "10px", 
-            margin: "10px 0", 
-            border: "1px solid #ddd", 
-            borderRadius: "4px",
-            display: "flex",
-            alignItems: "center",
-            gap: "10px"
-          }}>
-            <input
-              type="checkbox"
-              checked={todo.completed === 1}
-              onChange={() => completeTodo(todo.id)}
-              style={{ cursor: "pointer" }}
-            />
-            
-            {editingId === todo.id ? (
-              <>
-                <input
-                  value={editingTitle}
-                  onChange={(e) => setEditingTitle(e.target.value)}
-                  style={{ flex: 1, padding: "4px" }}
-                />
-                <button onClick={() => updateTodo(todo.id)} style={{ padding: "4px 8px", backgroundColor: "#28a745", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
-                  Save
-                </button>
-                <button onClick={cancelEdit} style={{ padding: "4px 8px", backgroundColor: "#6c757d", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
-                  Cancel
-                </button>
-              </>
-            ) : (
-              <>
-                <span style={{ 
-                  flex: 1, 
-                  textDecoration: todo.completed === 1 ? "line-through" : "none",
-                  color: todo.completed === 1 ? "#6c757d" : "inherit"
-                }}>
-                  {todo.title}
-                </span>
-                <button onClick={() => startEditTodo(todo)} style={{ padding: "4px 8px", backgroundColor: "#007bff", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
-                  Update
-                </button>
-                <button onClick={() => deleteTodo(todo.id)} style={{ padding: "4px 8px", backgroundColor: "#dc3545", color: "white", border: "none", borderRadius: "4px", cursor: "pointer" }}>
-                  Delete
-                </button>
-              </>
-            )}
-          </div>
-        ))
+        <div className="todo-list">
+          {todos.map((todo) => (
+            <div 
+              key={todo.id} 
+              className={`todo-item ${todo.completed === 1 ? 'completed' : ''}`}
+            >
+              <input
+                type="checkbox"
+                checked={todo.completed === 1}
+                onChange={() => completeTodo(todo.id)}
+                className="todo-checkbox"
+              />
+              
+              {editingId === todo.id ? (
+                <>
+                  <input
+                    value={editingTitle}
+                    onChange={(e) => setEditingTitle(e.target.value)}
+                    className="todo-edit-input"
+                    autoFocus
+                  />
+                  <div className="todo-actions">
+                    <button onClick={() => updateTodo(todo.id)} className="btn-save">
+                      Save
+                    </button>
+                    <button onClick={cancelEdit} className="btn-cancel">
+                      Cancel
+                    </button>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <span className="todo-title">{todo.title}</span>
+                  <div className="todo-actions">
+                    <button onClick={() => startEditTodo(todo)} className="btn-update">
+                      Edit
+                    </button>
+                    <button onClick={() => deleteTodo(todo.id)} className="btn-delete">
+                      Delete
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
       )}
     </div>
   );

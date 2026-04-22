@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import "../index.css";
 
 export default function Login() {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -19,24 +20,39 @@ export default function Login() {
   };
 
   return (
-    <div>
-      <h2>Login</h2>
-      {error && <p style={{color: "red"}}>{error}</p>}
-      <form onSubmit={handleLogin}>
-        <input 
-          placeholder="email" 
-          value={form.email}
-          onChange={e => setForm({...form, email: e.target.value})}
-        />
-        <input 
-          type="password" 
-          placeholder="password"
-          value={form.password}
-          onChange={e => setForm({...form, password: e.target.value})}
-        />
-        <button type="submit">Login</button>
-      </form>
-      <p>Don't have an account? <a href="/signup">Register</a></p>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h1 className="auth-title">Welcome Back</h1>
+        <p className="auth-subtitle">Sign in to continue to your account</p>
+        
+        {error && <div className="auth-error">{error}</div>}
+        
+        <form onSubmit={handleLogin} className="auth-form">
+          <input 
+            className="auth-input"
+            placeholder="Enter your email" 
+            value={form.email}
+            onChange={e => setForm({...form, email: e.target.value})}
+            type="email"
+            required
+          />
+          <input 
+            className="auth-input"
+            type="password" 
+            placeholder="Enter your password"
+            value={form.password}
+            onChange={e => setForm({...form, password: e.target.value})}
+            required
+          />
+          <button type="submit" className="auth-btn">
+            Sign In
+          </button>
+        </form>
+        
+        <div className="auth-footer">
+          Don't have an account? <a href="/signup">Create one</a>
+        </div>
+      </div>
     </div>
   );
 }
