@@ -2,7 +2,8 @@ import * as todoService from "../services/todo.service.js";
 
 export const getAllTodos = async (req, res, next) => {
   try {
-    const todos = await todoService.getTodos();
+    const userId = req.user.id;
+    const todos = await todoService.getTodos(userId);
     res.json(todos);
   } catch (error) {
     next(error);
@@ -12,12 +13,13 @@ export const getAllTodos = async (req, res, next) => {
 export const createTodo = async (req, res, next) => {
   try {
     const { title } = req.body;
+    const userId = req.user.id;
 
     if (!title) {
       return res.status(400).json({ message: "Title required" });
     }
 
-    await todoService.createTodo(title);
+    await todoService.createTodo(title, userId);
     res.status(201).json({ message: "Created" });
   } catch (error) {
     next(error);
@@ -46,6 +48,22 @@ export const completeTodo = async (req, res, next) => {
   try {
     await todoService.markTodoCompleted(req.params.id);
     res.json({ message: "Completed" });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateTodo = async (req, res, next) => {
+  try {
+    const { title } = req.body;
+    const userId = req.user.id;
+
+    if (!title) {
+      return res.status(400).json({ message: "Title required" });
+    }
+
+    await todoService.updateTodo(req.params.id, title, userId);
+    res.json({ message: "Updated" });
   } catch (error) {
     next(error);
   }

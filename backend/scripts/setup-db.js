@@ -26,8 +26,21 @@ async function setupDatabase() {
     // Use the database
     await connection.query('USE todo_app');
 
-    // Drop and recreate users table to ensure correct schema
+    // Disable foreign key checks to allow dropping tables
+    await connection.query('SET FOREIGN_KEY_CHECKS = 0');
+    
+    // Drop and recreate todos table first (child table)
+    await connection.query('DROP TABLE IF EXISTS todos');
+    console.log('Todos table dropped');
+    
+    // Drop and recreate users table (parent table)
     await connection.query('DROP TABLE IF EXISTS users');
+    console.log('Users table dropped');
+    
+    // Re-enable foreign key checks
+    await connection.query('SET FOREIGN_KEY_CHECKS = 1');
+    
+    // Create users table
     await connection.query(`
       CREATE TABLE users (
         id INT AUTO_INCREMENT PRIMARY KEY,
@@ -39,8 +52,7 @@ async function setupDatabase() {
     `);
     console.log('Users table created');
 
-    // Drop and recreate todos table to ensure correct schema
-    await connection.query('DROP TABLE IF EXISTS todos');
+    // Create todos table
     await connection.query(`
       CREATE TABLE todos (
         id INT AUTO_INCREMENT PRIMARY KEY,
